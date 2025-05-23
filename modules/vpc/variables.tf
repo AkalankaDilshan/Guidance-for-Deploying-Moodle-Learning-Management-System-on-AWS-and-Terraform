@@ -22,3 +22,8 @@ variable "private_subnet_cidrs" {
   type        = list(string)
   description = "cidr values for private subnet"
 }
+
+variable "private_data_subnet_cidrs" {
+  type        = list(string)
+  description = "cidr values for private data subnet"
+}
