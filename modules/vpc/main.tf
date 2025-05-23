@@ -1,24 +1,73 @@
-variable "vpc_name" {
-  type        = string
-  description = "name for the main vpc"
+resource "aws_vpc" "main_vpc" {
+  cidr_block           = var.cidr_block
+  enable_dns_hostnames = true
+  tags = {
+    Name = var.vpc_name
+  }
 }
 
-variable "cidr_block" {
-  type        = string
-  description = "range of ip addresses that in vpc"
+resource "aws_subnet" "public_subnet" {
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = element(var.public_subnet_cidrs, count.index)
+  availability_zone       = element(var.availability_zones, count.index)
+  map_public_ip_on_launch = true
+  tags = {
+    Name = "public subnet ${count.index + 1}"
+  }
 }
 
-variable "availability_zones" {
-  type        = list(string)
-  description = "availability zones list"
+resource "aws_subnet" "private_subnet" {
+  count             = length(var.private_subnet_cidrs)
+  vpc_id            = aws_vpc.main_vpc.id
+  cidr_block        = element(var.private_subnet_cidrs, count.index)
+  availability_zone = element(var.availability_zones, count.index)
+  tags = {
+    Name = "private subnet ${count.index + 1}"
+  }
 }
 
-variable "public_subnet_cidrs" {
-  type        = list(string)
-  description = "cidr values for public subnet"
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.main_vpc.id
+  tags = {
+    Name = "${var.vpc_name}-public-route-table"
+  }
+}
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main_vpc.id
+  tags = {
+    Name = "${var.vpc_name}-igw"
+  }
 }
 
-variable "private_subnet_cidrs" {
-  type        = list(string)
-  description = "cidr values for private subnet"
+resource "aws_route" "public_route" {
+  route_table_id         = aws_route_table.public_rt.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.igw.id
+}
+
+resource "aws_route_table_association" "public_rt_association" {
+  count          = length(aws_subnet.public_subnet)
+  subnet_id      = aws_subnet.public_subnet[count.index].id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_route_table" "private_rt" {
+  count = length(var.private_subnet_cidrs)
+  vpc_id = aws_vpc.main_vpc.id 
+  tags = {
+    Name = "${var.vpc_name}-private-rt-${count.index}"
+  }
+}
+
+resource "aws_eip" "elastic_IP_address" {
+  count = length(var.private_subnet_cidrs)
+  domain = "vpc"
+  tags = {
+    Name = "$private-subnet-${count.index + 1}-eip"
+  }
+}
+
+resource "aws_nat_gateway" "nat_gateway" {
+  count = length(var.)
 }
