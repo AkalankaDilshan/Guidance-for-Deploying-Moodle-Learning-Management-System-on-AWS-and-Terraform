@@ -11,3 +11,14 @@ module "main_vpc" {
   private_subnet_cidrs      = ["192.168.2.0/24", "192.168.3.0/24"]
   private_data_subnet_cidrs = ["192.168.4.0/24", "192.168.5.0/24"]
 }
+
+module "ec2_security_group" {
+  source              = "./modules/security_group"
+  vpc_id              = module.main_vpc.vpc_id
+  security_group_name = "ec2-sg"
+}
+
+# module "ec2" {
+#   source     = "./modules/compute"
+#   subnet_ids = []
+# }
