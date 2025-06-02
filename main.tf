@@ -12,16 +12,16 @@ module "main_vpc" {
   private_data_subnet_cidrs = ["192.168.4.0/24", "192.168.5.0/24"]
 }
 
-module "security_group" {
-  source              = "./modules/security_group"
-  vpc_id              = module.main_vpc.vpc_id
-  security_group_name = "ec2-sg"
-  depends_on          = [module.main_vpc]
-}
+# module "security_group" {
+#   source              = "./modules/security_group"
+#   vpc_id              = module.main_vpc.vpc_id
+#   security_group_name = "ec2-sg"
+#   depends_on          = [module.main_vpc]
+# }
 
 module "security_group_alb" {
   source     = "./modules/security_group_alb"
-  vpc_id     = "module.main_vpc.vpc_id"
+  vpc_id     = module.main_vpc.vpc_id
   depends_on = [module.main_vpc]
 }
 
