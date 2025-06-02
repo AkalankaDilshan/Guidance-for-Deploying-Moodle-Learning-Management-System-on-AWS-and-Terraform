@@ -8,12 +8,12 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
-resource "aws_launch_configuration" "asg_lt" {
-  name_prefix     = "asg-template-"
-  image_id        = data.aws_ami.amazon_linux_2.id
-  instance_type   = var.instance_type
-  key_name        = var.key_name
-  security_groups = var.security_group_ids
+resource "aws_launch_template" "asg_lt" {
+  name_prefix            = "asg-template-"
+  image_id               = data.aws_ami.amazon_linux_2.id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = var.security_group_ids
 
   user_data = base64encode(<<-EOF
               #!/bin/bash
@@ -32,12 +32,15 @@ resource "aws_launch_configuration" "asg_lt" {
 
 
 resource "aws_autoscaling_group" "example_asg" {
-  name_prefix          = "example-asg-"
-  max_size             = var.max_size
-  min_size             = var.min_size
-  desired_capacity     = var.desired_capacity
-  vpc_zone_identifier  = var.subnet_ids
-  launch_configuration = aws_launch_configuration.asg_lt.name
+  name_prefix         = "example-asg-"
+  max_size            = var.max_size
+  min_size            = var.min_size
+  desired_capacity    = var.desired_capacity
+  vpc_zone_identifier = var.subnet_ids
+  launch_template {
+    id      = aws_launch_template.asg_lt.id
+    version = "$Latest"
+  }
 
   health_check_type         = "ELB"
   health_check_grace_period = 300
