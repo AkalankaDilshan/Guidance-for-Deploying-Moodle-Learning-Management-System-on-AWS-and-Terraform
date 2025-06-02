@@ -1,5 +1,6 @@
 resource "aws_autoscaling_policy" "scale_up" {
   name                   = "scale-up"
+  policy_type            = "SimpleScaling"
   scaling_adjustment     = var.scale_up_adjustment
   adjustment_type        = "ChangeIncapacity"
   cooldown               = 300
@@ -8,6 +9,7 @@ resource "aws_autoscaling_policy" "scale_up" {
 
 resource "aws_autoscaling_policy" "scale_down" {
   name                   = "scale-down"
+  policy_type            = "SimpleScaling"
   scaling_adjustment     = var.scale_down_adjustment
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
