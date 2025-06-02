@@ -8,13 +8,13 @@ variable "alb_name" {
   description = "name for Application Load Balancer"
 }
 
-variable "alb_subner_id" {
-  type        = list(string)
-  description = "id for alb subnets"
-}
+# variable "alb_subner_id" {
+#   type        = list(string)
+#   description = "id for alb subnets"
+# }
 
 variable "security_group_id" {
-  type        = string
+  type        = list(string)
   description = "application load balancer security group id"
 }
 
@@ -35,15 +35,15 @@ variable "load_balancer_type" {
   default     = "application"
 }
 
-variable "target_group_type" {
-  type        = string
-  description = "the type for target group"
-}
+# variable "target_group_type" {
+#   type        = string
+#   description = "the type for target group"
+# }
 
-variable "target_ids" {
-  type        = list(string)
-  description = "List of target ids"
-}
+# variable "target_ids" {
+#   type        = list(string)
+#   description = "List of target ids"
+# }
 
 variable "enable_deletion_protection" {
   description = "Enable deletion protection for the ALB"
