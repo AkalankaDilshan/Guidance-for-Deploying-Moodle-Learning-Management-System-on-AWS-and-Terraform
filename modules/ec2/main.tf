@@ -4,7 +4,12 @@ data "aws_ami" "amazon_linux_2" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-ebs"]
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 
