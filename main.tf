@@ -16,7 +16,7 @@ module "security_group" {
   source              = "./modules/security_group"
   vpc_id              = module.main_vpc.vpc_id
   security_group_name = "ec2-sg"
-  depends_on          = [module.vpc]
+  depends_on          = [module.main_vpc]
 }
 
 module "security_group_alb" {
