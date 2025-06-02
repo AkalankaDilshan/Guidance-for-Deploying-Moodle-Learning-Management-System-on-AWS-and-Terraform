@@ -12,13 +12,31 @@ module "main_vpc" {
   private_data_subnet_cidrs = ["192.168.4.0/24", "192.168.5.0/24"]
 }
 
-module "ec2_security_group" {
+module "security_group" {
   source              = "./modules/security_group"
   vpc_id              = module.main_vpc.vpc_id
   security_group_name = "ec2-sg"
 }
 
-# module "ec2" {
-#   source     = "./modules/compute"
-#   subnet_ids = []
-# }
+module "loadbalancing" {
+  source            = "./modules/alb"
+  alb_name          = "application-load-balancer"
+  vpc_id            = module.main_vpc.vpc_id
+  subnet_ids        = module.main_vpc.public_subnet_ids
+  security_group_id = [module.security_group.asg_security_group_id]
+}
+
+module "compute" {
+  source             = "./modules/ec2"
+  subnet_ids         = module.main_vpc.private_subnet_ec2_ids
+  security_group_ids = [module.security_group.asg_security_group_id]
+  key_name           = "server-key"
+  target_group_arns  = [module.loadbalancing.target_group_arn]
+}
+
+module "scaling" {
+  source   = "./modules/scaling"
+  asg_name = module.compute.asg_name
+}
+
+
