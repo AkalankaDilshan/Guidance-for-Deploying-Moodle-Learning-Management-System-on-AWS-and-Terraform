@@ -18,18 +18,23 @@ module "security_group" {
   security_group_name = "ec2-sg"
 }
 
+module "security_group_alb" {
+  source = "./modules/security_group_alb"
+  vpc_id = "module.main_vpc.vpc_id"
+}
+
 module "loadbalancing" {
   source            = "./modules/alb"
   alb_name          = "application-load-balancer"
   vpc_id            = module.main_vpc.vpc_id
   subnet_ids        = module.main_vpc.public_subnet_ids
-  security_group_id = [module.security_group.asg_security_group_id]
+  security_group_id = [module.security_group_alb.asg_security_group_id]
 }
 
 module "compute" {
   source             = "./modules/ec2"
   subnet_ids         = module.main_vpc.private_subnet_ec2_ids
-  security_group_ids = [module.security_group.asg_security_group_id]
+  security_group_ids = [module.security_group_alb.asg_security_group_id]
   key_name           = "server-key"
   target_group_arns  = [module.loadbalancing.target_group_arn]
 }
