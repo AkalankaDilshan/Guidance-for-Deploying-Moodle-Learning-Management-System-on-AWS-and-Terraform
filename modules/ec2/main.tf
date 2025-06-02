@@ -18,7 +18,7 @@ resource "aws_launch_template" "asg_lt" {
     associate_public_ip_address = true
     security_groups             = var.security_group_ids
   }
-  user_data = file("userdata_script.sh")
+  user_data = file("/userdata_script.sh")
 
   tag_specifications {
     resource_type = "instance"
