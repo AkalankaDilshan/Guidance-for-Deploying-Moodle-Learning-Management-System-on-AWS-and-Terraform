@@ -2,7 +2,7 @@ resource "aws_autoscaling_policy" "scale_up" {
   name                   = "scale-up"
   policy_type            = "SimpleScaling"
   scaling_adjustment     = var.scale_up_adjustment
-  adjustment_type        = "ChangeIncapacity"
+  adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
   autoscaling_group_name = var.asg_name
 }
